@@ -1,3 +1,5 @@
+package intro;
+
 public class MainClass {
 
     int number = 14;
