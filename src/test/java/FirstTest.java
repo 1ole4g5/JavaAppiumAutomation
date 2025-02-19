@@ -11,6 +11,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.URL;
 import java.time.Duration;
+import java.util.List;
 
 public class FirstTest {
 
@@ -200,6 +201,32 @@ public class FirstTest {
         );
     }
 
+    @Test
+    public void testWordsInSearchResults() {
+        waitForElementAndClick(
+                By.id("org.wikipedia:id/fragment_onboarding_skip_button"),
+                "Cannot find skip button"
+        );
+
+        waitForElementAndClick(
+                By.id("org.wikipedia:id/search_container"),
+                "Cannot find search init Поиск по Википедии"
+        );
+
+        waitForElementAndSendKeys(
+                By.xpath("//*[@resource-id=\"org.wikipedia:id/search_src_text\"]"),
+                "Java",
+                "Cannot find search input"
+        );
+
+        String result = "Java";
+        By locator = By.xpath("//*[@resource-id=\"org.wikipedia:id/search_results_list\"]//*[@resource-id=\"org.wikipedia:id/page_list_item_title\"]");
+        Assertions.assertTrue(
+                getElements(locator).stream().anyMatch(it -> it.getAttribute("text").contains(result)),
+                "Search result does not contains " + result
+        );
+    }
+
     private WebElement waitForElementPresent(By by, String errorMessage, Duration timeoutInSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
         wait.withMessage(errorMessage + "\n");
@@ -220,10 +247,14 @@ public class FirstTest {
         return waitForElementAndClick(by, errorMessage, Duration.ofSeconds(5));
     }
 
-    private WebElement waitForElementAndSendKeys(By by, String value, String errorMessage) {
-        WebElement element = waitForElementPresent(by, errorMessage);
+    private WebElement waitForElementAndSendKeys(By by, String value, String errorMessage, Duration timeoutInSeconds) {
+        WebElement element = waitForElementPresent(by, errorMessage, timeoutInSeconds);
         element.sendKeys(value);
         return element;
+    }
+
+    private WebElement waitForElementAndSendKeys(By by, String value, String errorMessage) {
+        return waitForElementAndSendKeys(by, value, errorMessage, Duration.ofSeconds(5));
     }
 
     private boolean waitForElementNotPresent(By by, String errorMessage, Duration timeoutInSeconds) {
@@ -259,5 +290,9 @@ public class FirstTest {
 
     private int getElementsSize(By by) {
         return driver.findElements(by).size();
+    }
+
+    private List<WebElement> getElements(By by) {
+        return driver.findElements(by);
     }
 }
