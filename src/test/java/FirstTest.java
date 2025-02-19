@@ -1,7 +1,6 @@
 import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.android.AndroidDriver;
-import io.appium.java_client.remote.SupportsContextSwitching;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
@@ -12,8 +11,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.URL;
 import java.time.Duration;
-import java.util.Objects;
-import java.util.Set;
 
 public class FirstTest {
 
@@ -149,6 +146,26 @@ public class FirstTest {
         );
     }
 
+    @Test
+    public void testSearchFieldAttribute() {
+        waitForElementAndClick(
+                By.id("org.wikipedia:id/fragment_onboarding_skip_button"),
+                "Cannot find skip button"
+        );
+
+        waitForElementAndClick(
+                By.id("org.wikipedia:id/search_container"),
+                "Cannot find search init Поиск по Википедии"
+        );
+
+        assertElementHasText(
+                By.id("org.wikipedia:id/search_src_text"),
+                "Поиск по Википедии",
+                "Cannot find search text field",
+                Duration.ofSeconds(5)
+        );
+    }
+
     private WebElement waitForElementPresent(By by, String errorMessage, Duration timeoutInSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
         wait.withMessage(errorMessage + "\n");
@@ -189,5 +206,20 @@ public class FirstTest {
 
     private WebElement waitForElementAndClear(By by, String errorMessage) {
         return waitForElementAndClear(by, errorMessage, Duration.ofSeconds(5));
+    }
+
+    private String getAttribute(By by, String errorMessage, Duration timeoutInSeconds) {
+        WebElement element = waitForElementPresent(by, errorMessage, timeoutInSeconds);
+        return element.getAttribute("text");
+    }
+
+    private void assertElementHasText(By by, String expectedText, String errorMessage, Duration timeoutInSeconds) {
+        String actualText = getAttribute(by, errorMessage, timeoutInSeconds);
+
+        Assertions.assertEquals(
+                expectedText,
+                actualText,
+                "Expected text " + expectedText + " is not equal to " + actualText
+        );
     }
 }
