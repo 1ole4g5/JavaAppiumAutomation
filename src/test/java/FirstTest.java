@@ -166,6 +166,40 @@ public class FirstTest {
         );
     }
 
+    @Test
+    public void testCancelSearchEx3() {
+        waitForElementAndClick(
+                By.id("org.wikipedia:id/fragment_onboarding_skip_button"),
+                "Cannot find skip button"
+        );
+
+        waitForElementAndClick(
+                By.id("org.wikipedia:id/search_container"),
+                "Cannot find search init Поиск по Википедии"
+        );
+
+        waitForElementAndSendKeys(
+                By.xpath("//*[@resource-id=\"org.wikipedia:id/search_src_text\"]"),
+                "Java",
+                "Cannot find search input"
+        );
+
+        Assertions.assertTrue(
+                getElementsSize(By.xpath("//*[@resource-id=\"org.wikipedia:id/search_results_list\"]/android.view.ViewGroup")) > 0,
+                "Cannot find several articles"
+        );
+
+        waitForElementAndClick(
+                By.id("org.wikipedia:id/search_close_btn"),
+                "Cannot find search close button"
+        );
+
+        waitForElementPresent(
+                By.id("org.wikipedia:id/search_empty_message"),
+                "Search result is still present"
+        );
+    }
+
     private WebElement waitForElementPresent(By by, String errorMessage, Duration timeoutInSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
         wait.withMessage(errorMessage + "\n");
@@ -221,5 +255,9 @@ public class FirstTest {
                 actualText,
                 "Expected text " + expectedText + " is not equal to " + actualText
         );
+    }
+
+    private int getElementsSize(By by) {
+        return driver.findElements(by).size();
     }
 }
